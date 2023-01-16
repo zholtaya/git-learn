@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
 
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth()+1;
+  const day = date.getDate();
+
+  return `${day}.${month}.${year}`;
+
+}
 
 const App = () => {
 
@@ -77,26 +85,27 @@ const App = () => {
   return (
     <div className="layout">
       <div>
-        <form onSubmit={(e) => onSubmitHandle(e)}>
+        <form onSubmit={(e) => onSubmitHandle(e)} className="form_add">
           <h2>Добавить задачу:</h2>
           <input type="text"
             placeholder="Купить молоко..."
             onChange={(e) => onChangeHandle(e)}
             value={value}
+            className="add_input_style"
           />
         </form>
       </div>
-      <div>
+      <div className="all_todos">
         {
           todos.map((todo) => {
             return (
-              <div>
-                <h3>{todo.name}({todo.date.toString()})</h3>
+              <div className="one_todo">
+                <h3>{todo.name}({formatDate(todo.date)})</h3>
                 <div>
-                  <button onClick={() => onCheckedToggle(todo.id)}>
+                  <button onClick={() => onCheckedToggle(todo.id)} className="buttons">
                     {todo.checked ? "Не выполнена" : "Выполнена"}
                   </button>
-                  <button onClick={() => onDeleteTodoById(todo.id)}>
+                  <button onClick={() => onDeleteTodoById(todo.id)} className="buttons">
                     Удалить
                   </button>
                 </div>
