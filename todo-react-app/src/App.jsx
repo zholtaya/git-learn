@@ -1,108 +1,114 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 
-const UseEffectComponent = () => {
-  useEffect(()=>{
-    console.log('Текстовый компонент для проверки удаления компонентов со страницы');
-  },[]);
-  return(
-    <div>
-      Текстовый компонент для проверки удаления компонентов со страницы
-    </div>
-  )
-}
 
 const App = () => {
 
-  const [count, setCount] = useState(0);
-  const [name, setName] = useState("");
+  const [todos, setTodos] = useState([
+    {
+      id: 1,
+      name: "Купить продукты",
+      date: new Date(),
+      checked: false
+    },
+    {
+      id: 2,
+      name: "Заправить автомобиль",
+      date: new Date(),
+      checked: false
+    }
+  ]);
 
-  const [skills, setSkills] = useState(['Front-End', 'Back-End', 'CI/CD']);
+  const [value, setValue] = useState('');
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [a, setA] = useState(0);
-
-  useEffect(() => {
-    console.log('произошел первый рендер');
+  const onChangeHandle = (event) => {
+    setValue(event.target.value);
+  }
 
 
-  }, [count.from]);
+  const onSubmitHandle = (event) => {
+    event.preventDefault();
 
-  const onChangeFormHandle = (e) => {
-    setForm((prevState) => {
-      prevState = { ...prevState };
+    // add todos
+    setTodos((prevState) => {
+      prevState = [...prevState];
 
-      prevState[e.target.name] = e.target.value;
+      prevState.push({
+        id: Date.now(),
+        name: value,
+        date: new Date(),
+        checked: false
+      });
+      return prevState;
+    });
 
+    setValue('');
+  }
+
+  const onCheckedToggle = (id) => {
+    setTodos((prevState) => {
+      prevState = [...prevState];
+
+      prevState = prevState.map((todo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            checked: !todo.checked
+          }
+        }
+        return todo;
+      });
       return prevState;
     });
   }
 
+  const onDeleteTodoById = (id) => {
+    setTodos((prevState) => {
+      prevState = [...prevState];
 
-  const onChangeHandle = (e) => {
-    setName(e.target.value);
-    setCount(e.target.value.length);
-  };
+      // .filter()
+      prevState = prevState.filter((todo) => todo.id !== id);
 
-  const onSubmitAddSkill = (e) => {
-    if (e.keyCode === 13) {
-      setSkills((prevState) => {
-        return [...prevState, e.target.value];
-      });
-      e.target.value = '';
-    }
+
+      return prevState;
+
+    });
   }
 
   return (
-    <div>
-      <p>Вы нажали на меня {count} раз(а)</p>
-      <button onClick={() => setCount((prev) => prev + 1)}>+1</button>
-      <button onClick={() => setCount(count + 5)}>+5</button>
-
-
-      {count >=10? <h1>компонент больше не доступен</h1>:<UseEffectComponent/>}
-
-      <br />
-
-      <h1>Привет, {name}!</h1>
-      <input type="text" onChange={(e) => onChangeHandle(e)} />
-
-      <br />
-
-      <input type="text" onKeyDown={(e) => onSubmitAddSkill(e)} />
-
-      <ul>
+    <div className="layout">
+      <div>
+        <form onSubmit={(e) => onSubmitHandle(e)}>
+          <h2>Добавить задачу:</h2>
+          <input type="text"
+            placeholder="Купить молоко..."
+            onChange={(e) => onChangeHandle(e)}
+            value={value}
+          />
+        </form>
+      </div>
+      <div>
         {
-          skills.map((skill) => {
+          todos.map((todo) => {
             return (
-              <li>{skill}</li>
-            );
+              <div>
+                <h3>{todo.name}({todo.date.toString()})</h3>
+                <div>
+                  <button onClick={() => onCheckedToggle(todo.id)}>
+                    {todo.checked ? "Не выполнена" : "Выполнена"}
+                  </button>
+                  <button onClick={() => onDeleteTodoById(todo.id)}>
+                    Удалить
+                  </button>
+                </div>
+              </div>
+            )
           })
         }
-        <br />
 
-      </ul>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <label>email</label>
-        <input type="email"
-          name="email"
-          onChange={(e) => onChangeFormHandle(e)}
-          value={form.email} />
-
-        <label>password</label>
-        <input type="password"
-          name="password"
-          onChange={(e) => onChangeFormHandle(e)}
-          value={form.password} />
-
-        <button>Отправить форму</button>
-      </form>
+      </div>
     </div>
-  )
+  );
 
-}
+};
 
-export default App
+export default App;
